@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Mythopoets' Codices</title>
+    <!-- Tailwind CSS for high-performance styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        .animate-spin-slow { animation: spin-slow 30s linear infinite; }
+        .animate-spin-reverse { animation: spin-reverse 24s linear infinite; }
+        .glass-panel {
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(217, 119, 6, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .interactive-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(245, 158, 11, 0.8);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 min-h-screen font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- TOP SOVEREIGN HEADER & KINETIC DUAL-SPHERE ENGINE -->
+    <header class="w-full border-b border-amber-900/30 bg-[#0b0f19]/90 backdrop-blur-md p-4 lg:p-6 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+            
+            <!-- LEFT WING: PHOTOS VAULT GATEWAY -->
+            <a href="#photos-vault" class="glass-panel interactive-card w-full lg:w-72 p-4 rounded-xl flex items-center justify-between group">
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-amber-500 font-bold">Gateway Alpha</span>
+                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400">Photos Vault</h2>
+                </div>
+                <span class="text-amber-500 text-lg group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+
+            <!-- CENTER KINETIC DUAL-SPHERE ENGINE -->
+            <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center cursor-pointer group">
+                <!-- Glowing Center Core Energy Ball -->
+                <div class="absolute w-20 h-20 bg-amber-500/25 rounded-full blur-2xl animate-pulse"></div>
+                <div class="absolute w-10 h-10 bg-gradient-to-tr from-amber-600 to-amber-300 rounded-full shadow-[0_0_30px_#f59e0b] group-hover:scale-110 transition-transform"></div>
+
+                <!-- Outer Sphere (3 Tiers Counter-Rotating) -->
+                <div class="absolute inset-0 border border-amber-500/20 rounded-full animate-spin-slow pointer-events-none">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 glass-panel px-3 py-1 rounded-md text-[10px] tracking-wider text-amber-300">World Codex</div>
+                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 glass-panel px-3 py-1 rounded-md text-[10px] tracking-wider text-amber-300">Lore Streams</div>
+                </div>
+
+                <!-- Inner Core Sphere (Spinning in Reverse) -->
+                <div class="absolute inset-10 border border-amber-400/30 rounded-full animate-spin-reverse pointer-events-none border-dashed">
+                    <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[9px] font-bold">The Arbiter</div>
+                </div>
+            </div>
+
+            <!-- RIGHT WING: VIDEOS VAULT GATEWAY -->
+            <a href="#videos-vault" class="glass-panel interactive-card w-full lg:w-72 p-4 rounded-xl flex items-center justify-between group">
+                <div>
+                    <span class="text-[10px] uppercase tracking-widest text-amber-500 font-bold">Gateway Beta</span>
+                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400">Videos Vault</h2>
+                </div>
+                <span class="text-amber-500 text-lg group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+
+        </div>
+    </header>
+
+    <!-- MAIN SANCTUARY & MANIFESTO SECTION -->
+    <main class="max-w-5xl mx-auto px-6 py-16 space-y-20">
+        
+        <!-- HERO INTRODUCTION -->
+        <section class="text-center space-y-6">
+            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30">
+                The Global Worldbuilding Ecosystem
+            </span>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600">
+                The Mythopoets' Codices
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                A sanctuary for worldbuilders, writers, and creators worldwide. We do not just tell stories—we build universes with absolute structural weight, cinematic depth, and genuine human connection.
+            </p>
+        </section>
+
+        <!-- THE CORE PHILOSOPHY CARDS -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="glass-panel p-8 rounded-2xl space-y-4 interactive-card">
+                <h3 class="text-2xl font-bold text-amber-400 flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    The Grand Mythopoet
+                </h3>
+                <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
+                    A master creator of modern mythology who treats universes as living ecosystems. Armed with <strong>The Arbiter</strong>—the ultimate celestial sphere vehicle and weapon—the Mythopoet shapes reality, causality, and narrative structure from the void.
+                </p>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl space-y-4 interactive-card">
+                <h3 class="text-2xl font-bold text-amber-400 flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    The Armature Engine
+                </h3>
+                <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
+                    The structural backbone of creation. In software, it is the underlying architecture of <em>The Mythopoeist's Codex</em>; in our fictional worlds, it is the tectonic framework holding infinite imagination together without collapse.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
