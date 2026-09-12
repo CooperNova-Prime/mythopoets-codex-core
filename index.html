@@ -4,113 +4,425 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Mythopoets' Codices</title>
-    <!-- Tailwind CSS for high-performance styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         @keyframes spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes spin-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
-        .animate-spin-slow { animation: spin-slow 30s linear infinite; }
-        .animate-spin-reverse { animation: spin-reverse 24s linear infinite; }
-        .glass-panel {
-            background: rgba(11, 15, 25, 0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(217, 119, 6, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        
+        /* Macro Parallax Ring Sweep & Aging Shift */
+        @keyframes ring-parallax-sweep {
+            0% { transform: rotate(0deg) scale(1) translateZ(0); filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
+            50% { transform: rotate(180deg) scale(1.04) translateZ(35px); filter: drop-shadow(0 15px 30px rgba(245, 158, 11, 0.4)); }
+            100% { transform: rotate(360deg) scale(1) translateZ(0); filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8)); }
         }
-        .interactive-card {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+        /* The Arbiter's Silent Upper-Level Drift (Gliding across top tier and left corner) */
+        @keyframes arbiter-upper-drift {
+            0% { transform: translateX(-40px) translateY(-10px) scale(0.95); opacity: 0.5; }
+            50% { transform: translateX(60px) translateY(10px) scale(1.05); opacity: 0.9; filter: drop-shadow(0 0 45px rgba(245,158,11,0.6)); }
+            100% { transform: translateX(-40px) translateY(-10px) scale(0.95); opacity: 0.5; }
         }
-        .interactive-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            border-color: rgba(245, 158, 11, 0.8);
-            box-shadow: 0 0 25px rgba(245, 158, 11, 0.2);
+
+        @keyframes volumetric-blob-morph {
+            0% { 
+                border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+                transform: scale(1) rotate(0deg) translateZ(0);
+                filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.6)) brightness(1);
+            }
+            33% { 
+                border-radius: 30% 70% 70% 30% / 60% 40% 60% 40%;
+                transform: scale(1.08, 0.94) rotate(120deg) translateZ(20px);
+                filter: drop-shadow(0 0 50px rgba(217, 119, 6, 0.8)) brightness(1.2);
+            }
+            66% { 
+                border-radius: 50% 50% 30% 70% / 40% 70% 30% 60%;
+                transform: scale(0.95, 1.06) rotate(240deg) translateZ(-10px);
+                filter: drop-shadow(0 0 65px rgba(254, 243, 199, 0.9)) brightness(1.35);
+            }
+            100% { 
+                border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+                transform: scale(1) rotate(360deg) translateZ(0);
+                filter: drop-shadow(0 0 30px rgba(245, 158, 11, 0.6)) brightness(1);
+            }
+        }
+
+        /* Living Fountain-Pen Calligraphy & Ferrofluid Oscillating Spikes */
+        @keyframes living-ink-calligraphy {
+            0% { filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9)); transform: scale(1) skew(0deg); }
+            25% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.7)) contrast(125%); transform: scale(1.01) skew(-0.5deg); }
+            50% { filter: drop-shadow(2px 0 25px rgba(217, 119, 6, 0.9)) drop-shadow(-2px 0 10px rgba(254, 243, 199, 0.6)); transform: scale(1.005) skew(0.5deg); }
+            75% { filter: drop-shadow(0 0 20px rgba(245, 158, 11, 0.7)); transform: scale(1) skew(0deg); }
+            100% { filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9)); transform: scale(1) skew(0deg); }
+        }
+
+        @keyframes ink-writing-intro {
+            0% { opacity: 0; transform: scale(0.9) translateY(15px) perspective(500px) rotateX(15deg); filter: blur(4px); }
+            50% { opacity: 1; transform: scale(1.02) translateY(0) perspective(500px) rotateX(0deg); filter: blur(0px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: drop-shadow(0 4px 15px rgba(0,0,0,0.9)); }
+        }
+
+        @keyframes arc-lightning { 
+            0% { opacity: 0.1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 2px #f59e0b); }
+            50% { opacity: 1; transform: scale(1.08) rotate(180deg); filter: drop-shadow(0 0 30px #f59e0b) drop-shadow(0 0 60px #d97706); }
+            100% { opacity: 0.1; transform: scale(1) rotate(360deg); filter: drop-shadow(0 0 2px #f59e0b); }
+        }
+
+        .animate-ring-sweep { animation: ring-parallax-sweep 35s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        .animate-ring-reverse-sweep { animation: ring-parallax-sweep 28s cubic-bezier(0.4, 0, 0.2, 1) reverse infinite; }
+        .volumetric-ferro-blob { animation: volumetric-blob-morph 7s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        .arbiter-drifter { animation: arbiter-upper-drift 18s ease-in-out infinite; }
+        .living-calligraphy-title { animation: living-ink-calligraphy 6s ease-in-out infinite; }
+        .magic-arcs { animation: arc-lightning 3s ease-in-out infinite; }
+        .ink-writing-intro { animation: ink-writing-intro 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .calligraphy-title {
+            font-family: 'Cinzel Decorative', cursive, serif;
+            letter-spacing: 0.05em;
+        }
+        .body-editorial {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .embossed-text {
+            color: #f1f5f9;
+            text-shadow: 
+                0 1px 0 #0f172a,
+                0 2px 0 #1e293b,
+                0 3px 0 #334155,
+                0 4px 0 #475569,
+                0 8px 16px rgba(0, 0, 0, 0.9),
+                0 0 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .embossed-title-gold {
+            background: linear-gradient(to bottom, #fef3c7 0%, #f59e0b 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Aged Brushed Brass & Oxidized Connection Panels */
+        .aged-brass-ring {
+            background: radial-gradient(circle, rgba(20, 16, 10, 0.9) 0%, rgba(5, 4, 3, 0.95) 100%);
+            border: 2px solid rgba(217, 119, 6, 0.6);
+            box-shadow: 
+                inset 0 2px 5px rgba(254, 243, 199, 0.3),
+                inset 0 -5px 15px rgba(0, 0, 0, 0.9),
+                0 10px 25px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+        .aged-brass-ring::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed rgba(245, 158, 11, 0.35);
+            border-radius: 9999px;
+        }
+
+        /* AAA-Grade 3D Beveled Cellular Bubble Windows */
+        .bubble-window-3d {
+            background: radial-gradient(circle at 35% 35%, rgba(18, 24, 38, 0.94), rgba(3, 5, 8, 0.99));
+            backdrop-filter: blur(35px);
+            border: 1px solid rgba(217, 119, 6, 0.5);
+            border-bottom: 4px solid rgba(255, 255, 255, 0.95);
+            border-radius: 3rem;
+            box-shadow: 
+                inset 0 3px 6px rgba(255, 255, 255, 0.25),
+                inset 0 -15px 30px rgba(0, 0, 0, 0.9),
+                0 25px 60px -12px rgba(0, 0, 0, 0.98),
+                0 0 40px rgba(217, 119, 6, 0.25);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        .bubble-window-3d::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 15%; right: 15%; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+        }
+        .bubble-window-3d:hover {
+            transform: translateY(-10px) scale(1.015) perspective(1000px) rotateX(2deg);
+            border-color: rgba(245, 158, 11, 1);
+            border-bottom-color: rgba(255, 255, 255, 1);
+            box-shadow: 
+                inset 0 4px 10px rgba(255, 255, 255, 0.4),
+                inset 0 -20px 40px rgba(0, 0, 0, 0.95),
+                0 35px 80px -15px rgba(0, 0, 0, 1),
+                0 0 60px rgba(245, 158, 11, 0.5);
+        }
+
+        .cellular-grid-3d {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 3.5rem;
+        }
+        @media (min-width: 768px) {
+            .cellular-grid-3d {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .cellular-grid-3d > div:nth-child(even) {
+                transform: translateY(4rem);
+            }
+        }
+
+        #ink-transition-overlay {
+            position: fixed;
+            inset: 0;
+            background: #030407;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.9s ease;
+        }
+        #ink-transition-overlay.fade-out {
+            transform: scale(4);
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-[#07090e] text-slate-100 min-h-screen font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
+<body class="bg-[#030407] text-slate-100 min-h-screen antialiased selection:bg-amber-500 selection:text-slate-950 overflow-x-hidden">
 
-    <!-- TOP SOVEREIGN HEADER & KINETIC DUAL-SPHERE ENGINE -->
-    <header class="w-full border-b border-amber-900/30 bg-[#0b0f19]/90 backdrop-blur-md p-4 lg:p-6 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+    <!-- Cinematic Ink-Writing & Zoom Opening Overlay -->
+    <div id="ink-transition-overlay">
+        <div class="text-center space-y-6 p-6 cursor-pointer" onclick="executeInkDive()">
+            <p class="text-xs uppercase tracking-[0.35em] text-amber-500/80 embossed-text">The Mythopoet's Quill &bull; Reality Scribe</p>
+            <h2 class="text-3xl sm:text-6xl font-black embossed-title-gold calligraphy-title ink-writing-intro">
+                The Mythopoets' Codices
+            </h2>
+            <div class="pt-8">
+                <span class="inline-block px-8 py-3.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs tracking-[0.25em] uppercase font-bold hover:bg-amber-500/40 transition-colors shadow-[0_0_40px_rgba(245,158,11,0.5)]">
+                    Pierce the Ink Void ▶
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATMOSPHERIC BACKGROUND -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-30">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-900/50 via-[#030407]/95 to-[#030407]"></div>
+        <div class="absolute top-1/4 left-1/4 w-[32rem] h-[32rem] bg-amber-600/10 rounded-full blur-[140px] animate-pulse"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-[36rem] h-[36rem] bg-orange-600/10 rounded-full blur-[160px] animate-pulse"></div>
+    </div>
+
+    <!-- HEADER / DEEP VACUUM APERTURE CORE WITH SILENT ARBITER DRIFT -->
+    <header class="relative z-10 w-full border-b border-amber-900/40 bg-[#07090e]/95 backdrop-blur-2xl p-6 lg:p-8 shadow-2xl overflow-hidden">
+        
+        <!-- SILENT DRIFTING ARBITER ENGINE IN THE UPPER VOID -->
+        <div class="absolute -top-16 left-12 w-72 h-72 pointer-events-none z-0 opacity-45 arbiter-drifter rounded-full blur-[1px]">
+            <div class="absolute inset-0 aged-brass-ring rounded-full animate-ring-sweep opacity-70"></div>
+            <div class="absolute inset-10 volumetric-ferro-blob bg-amber-600/30 rounded-full blur-2xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
             
-            <!-- LEFT WING: PHOTOS VAULT GATEWAY -->
-            <a href="#photos-vault" class="glass-panel interactive-card w-full lg:w-72 p-4 rounded-xl flex items-center justify-between group">
+            <a href="#vaults" class="bubble-window-3d w-full lg:w-80 p-6 flex items-center justify-between group">
                 <div>
-                    <span class="text-[10px] uppercase tracking-widest text-amber-500 font-bold">Gateway Alpha</span>
-                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400">Photos Vault</h2>
+                    <span class="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-bold embossed-text">Cell Alpha</span>
+                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400 calligraphy-title embossed-text">Photos Vault</h2>
                 </div>
-                <span class="text-amber-500 text-lg group-hover:translate-x-1 transition-transform">→</span>
+                <span class="text-amber-500 text-xl group-hover:translate-x-1.5 transition-transform">✦</span>
             </a>
 
-            <!-- CENTER KINETIC DUAL-SPHERE ENGINE -->
-            <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center cursor-pointer group">
-                <!-- Glowing Center Core Energy Ball -->
-                <div class="absolute w-20 h-20 bg-amber-500/25 rounded-full blur-2xl animate-pulse"></div>
-                <div class="absolute w-10 h-10 bg-gradient-to-tr from-amber-600 to-amber-300 rounded-full shadow-[0_0_30px_#f59e0b] group-hover:scale-110 transition-transform"></div>
-
-                <!-- Outer Sphere (3 Tiers Counter-Rotating) -->
-                <div class="absolute inset-0 border border-amber-500/20 rounded-full animate-spin-slow pointer-events-none">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 glass-panel px-3 py-1 rounded-md text-[10px] tracking-wider text-amber-300">World Codex</div>
-                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 glass-panel px-3 py-1 rounded-md text-[10px] tracking-wider text-amber-300">Lore Streams</div>
+            <!-- CENTER DEEP VACUUM APERTURE & AGED BRASS PARALLAX RINGS -->
+            <div class="relative w-80 h-80 sm:w-96 sm:h-96 flex items-center justify-center cursor-pointer group bubble-window-3d rounded-full p-4 perspective-[1200px]">
+                
+                <!-- Outer Aged Brass Ring (Clockwise Parallax Sweep) -->
+                <div class="absolute inset-2 aged-brass-ring rounded-full animate-ring-sweep pointer-events-none">
+                    <div class="absolute top-2 left-1/2 -translate-x-1/2 w-3 h-1 bg-amber-500/80 rounded-full shadow-[0_0_8px_#f59e0b]"></div>
+                    <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-3 h-1 bg-amber-500/80 rounded-full shadow-[0_0_8px_#f59e0b]"></div>
                 </div>
 
-                <!-- Inner Core Sphere (Spinning in Reverse) -->
-                <div class="absolute inset-10 border border-amber-400/30 rounded-full animate-spin-reverse pointer-events-none border-dashed">
-                    <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[9px] font-bold">The Arbiter</div>
+                <!-- Inner Oxidized Connection Panel Ring (Counter-Clockwise Sweep) -->
+                <div class="absolute inset-10 aged-brass-ring rounded-full animate-ring-reverse-sweep pointer-events-none opacity-85 border-amber-600/40">
+                    <div class="absolute left-2 top-1/2 -translate-y-1/2 w-1 h-3 bg-amber-400/80 rounded-full"></div>
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 w-1 h-3 bg-amber-400/80 rounded-full"></div>
+                </div>
+                
+                <!-- 3D Volumetric Ferrofluid Core with Specular Highlights -->
+                <div class="absolute w-32 h-32 bg-amber-500/25 rounded-full blur-3xl volumetric-ferro-blob"></div>
+                <div class="absolute w-18 h-18 bg-gradient-to-tr from-[#030407] via-amber-600 to-amber-100 shadow-[0_0_70px_#f59e0b] volumetric-ferro-blob group-hover:scale-125 transition-transform duration-500"></div>
+
+                <!-- Electromagnetic Arcs -->
+                <div class="absolute inset-4 border border-amber-500/40 rounded-full animate-spin-slow pointer-events-none magic-arcs">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bubble-window-3d px-3.5 py-1 rounded-full text-[10px] tracking-widest text-amber-300 border-amber-500/50">⟡ APERTURE VOID ⟡</div>
+                    <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bubble-window-3d px-3.5 py-1 rounded-full text-[10px] tracking-widest text-amber-300 border-amber-500/50">⟡ FERRO-ORGANISM ⟡</div>
                 </div>
             </div>
 
-            <!-- RIGHT WING: VIDEOS VAULT GATEWAY -->
-            <a href="#videos-vault" class="glass-panel interactive-card w-full lg:w-72 p-4 rounded-xl flex items-center justify-between group">
+            <a href="#gallery" class="bubble-window-3d w-full lg:w-80 p-6 flex items-center justify-between group">
                 <div>
-                    <span class="text-[10px] uppercase tracking-widest text-amber-500 font-bold">Gateway Beta</span>
-                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400">Videos Vault</h2>
+                    <span class="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-bold embossed-text">Cell Beta</span>
+                    <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400 calligraphy-title embossed-text">Videos Vault</h2>
                 </div>
-                <span class="text-amber-500 text-lg group-hover:translate-x-1 transition-transform">→</span>
+                <span class="text-amber-500 text-xl group-hover:translate-x-1.5 transition-transform">✦</span>
             </a>
 
         </div>
     </header>
 
-    <!-- MAIN SANCTUARY & MANIFESTO SECTION -->
-    <main class="max-w-5xl mx-auto px-6 py-16 space-y-20">
+    <!-- MAIN SANCTUARY & HERO STAGE -->
+    <main class="relative z-10 max-w-6xl mx-auto px-6 py-20 space-y-24">
         
-        <!-- HERO INTRODUCTION -->
+        <!-- CENTERED LIVING FOUNTAIN-PEN CALLIGRAPHY TITLE -->
         <section class="text-center space-y-6">
-            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                The Global Worldbuilding Ecosystem
-            </span>
-            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600">
+            <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full text-xs font-semibold tracking-[0.25em] uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-[0_0_25px_rgba(245,158,11,0.2)]">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                <span class="embossed-text">A Tale from Empyrean Falls &bull; The Mythopoet</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-7xl font-black tracking-tight embossed-title-gold calligraphy-title living-calligraphy-title drop-shadow-[0_6px_25px_rgba(245,158,11,0.5)]">
                 The Mythopoets' Codices
             </h1>
-            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                A sanctuary for worldbuilders, writers, and creators worldwide. We do not just tell stories—we build universes with absolute structural weight, cinematic depth, and genuine human connection.
-            </p>
         </section>
 
-        <!-- THE CORE PHILOSOPHY CARDS -->
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="glass-panel p-8 rounded-2xl space-y-4 interactive-card">
-                <h3 class="text-2xl font-bold text-amber-400 flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    The Grand Mythopoet
-                </h3>
-                <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
-                    A master creator of modern mythology who treats universes as living ecosystems. Armed with <strong>The Arbiter</strong>—the ultimate celestial sphere vehicle and weapon—the Mythopoet shapes reality, causality, and narrative structure from the void.
-                </p>
+        <!-- MASTER CINEMATIC VIDEO PLAYER BUBBLE WINDOW -->
+        <section id="master-stage" class="bubble-window-3d p-6 sm:p-10 space-y-6">
+            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/30 flex items-center justify-center group shadow-2xl">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#030407] via-transparent to-transparent opacity-80 z-10"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-20 space-y-4">
+                    <button onclick="executeInkDive()" class="w-18 h-18 rounded-full bg-amber-500/20 border border-amber-500/60 flex items-center justify-center text-amber-400 shadow-[0_0_40px_rgba(245,158,11,0.5)] hover:scale-110 transition-transform cursor-pointer">
+                        ▶
+                    </button>
+                    <p class="text-sm tracking-[0.2em] uppercase text-amber-300 font-bold calligraphy-title embossed-text">Play Cinematic Intro &bull; A Tale from Empyrean Falls</p>
+                </div>
             </div>
-            <div class="glass-panel p-8 rounded-2xl space-y-4 interactive-card">
-                <h3 class="text-2xl font-bold text-amber-400 flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    The Armature Engine
-                </h3>
-                <p class="text-slate-300 leading-relaxed text-sm sm:text-base">
-                    The structural backbone of creation. In software, it is the underlying architecture of <em>The Mythopoeist's Codex</em>; in our fictional worlds, it is the tectonic framework holding infinite imagination together without collapse.
-                </p>
+            <div class="flex flex-wrap items-center justify-between px-2 text-xs text-slate-300 gap-4">
+                <span class="embossed-text">Organism Status: Stable / Fluid Node 01</span>
+                <div class="flex items-center gap-3">
+                    <button onclick="setPlayerView('half')" class="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/40 transition-colors embossed-text">Half Bubble</button>
+                    <button onclick="setPlayerView('wide')" class="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/40 transition-colors embossed-text">Wide Core</button>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- CELLULAR 3D BUBBLE WINDOW GALLERY -->
+        <section id="gallery" class="space-y-12 pt-10">
+            <div class="text-center space-y-3">
+                <h2 class="text-3xl font-bold text-amber-400 calligraphy-title embossed-text">The Chronicle Archives & Collaborative Realms</h2>
+                <p class="text-slate-300 body-editorial italic text-sm embossed-text">Explore featured partner visions, stock fantasy vignettes, and independent narrative showcases.</p>
+            </div>
+
+            <div class="cellular-grid-3d pb-12">
+                
+                <!-- Bubble Item 1 -->
+                <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="executeInkDive()">
+                    <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
+                        <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node I</span>
+                        <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Whispers of the Northern Spire</h3>
+                            <p class="text-[11px] text-amber-400 embossed-text">Collaborative Showcase &bull; Realm of Aloria</p>
+                        </div>
+                        <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span class="embossed-text">Creator: Aloria Studios</span>
+                        <a href="#contact" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Bubble Item 2 -->
+                <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="executeInkDive()">
+                    <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
+                        <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node II</span>
+                        <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">The Sunken Bastion of Oakhaven</h3>
+                            <p class="text-[11px] text-amber-400 embossed-text">Independent Partner &bull; Mythic Archive</p>
+                        </div>
+                        <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span class="embossed-text">Creator: Oakhaven Guild</span>
+                        <a href="#contact" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Bubble Item 3 -->
+                <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="executeInkDive()">
+                    <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
+                        <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node III</span>
+                        <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Echoes Across the Obsidian Reach</h3>
+                            <p class="text-[11px] text-amber-400 embossed-text">Featured Stock Reel &bull; Empyrean Era</p>
+                        </div>
+                        <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span class="embossed-text">Creator: Obsidian Core</span>
+                        <a href="#contact" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Bubble Item 4 -->
+                <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="executeInkDive()">
+                    <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
+                        <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node IV</span>
+                        <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Sanctum of the Wandering Scribe</h3>
+                            <p class="text-[11px] text-amber-400 embossed-text">Partner Showcase &bull; Codices Network</p>
+                        </div>
+                        <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
+                    </div>
+                    <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span class="embossed-text">Creator: Scribe Works</span>
+                        <a href="#contact" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
 
     </main>
 
+    <script>
+        function executeInkDive() {
+            const overlay = document.getElementById('ink-transition-overlay');
+            overlay.classList.add('fade-out');
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setTimeout(() => {
+                    overlay.classList.remove('fade-out');
+                }, 1000);
+            }, 900);
+        }
+
+        function setPlayerView(mode) {
+            const stage = document.getElementById('master-stage');
+            if (mode === 'half') {
+                stage.style.maxWidth = '780px';
+                stage.style.margin = '0 auto';
+            } else {
+                stage.style.maxWidth = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
