@@ -1,1028 +1,280 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Mythopoets' Codices &bull; Reality Scribe Core</title>
-  
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Fonts: Cinzel Decorative & Playfair Display -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Mythopoeist's Codices</title>
+    <!-- Utilizing Google Fonts for a premium UI feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f141e; /* Deep matte navy */
+            --panel-bg: #1a2233; /* Slightly lighter matte navy for panels */
+            --accent-glow: #00d2ff; /* Under-lighting dynamic */
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: #2a3449;
+        }
 
-  <!-- Three.js (r128) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body, html {
-      width: 100%;
-      min-height: 100%;
-      overflow-x: hidden;
-      background-color: #030407;
-      color: #f1f5f9;
-      font-family: 'Playfair Display', serif;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-    /* Fixed WebGL & 2D Physics Canvases */
-    #webgl-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 1;
-      pointer-events: none;
-    }
-    #ui-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 2;
-      pointer-events: auto;
-    }
+        /* Top Navigation / Header */
+        header {
+            height: 60px;
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #ffffff;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
 
-    /* Foreground Interactive DOM Layer */
-    #content-layer {
-      position: relative;
-      z-index: 10;
-      pointer-events: auto;
-    }
+        /* Main Workspace */
+        .workspace {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 60px);
+        }
 
-    .calligraphy-title {
-      font-family: 'Cinzel Decorative', cursive, serif;
-      letter-spacing: 0.05em;
-    }
-    .body-editorial {
-      font-family: 'Playfair Display', serif;
-    }
+        /* Left Panel - Lore Categories */
+        .left-panel {
+            width: 300px;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
 
-    .embossed-text {
-      color: #f1f5f9;
-      text-shadow: 
-        0 1px 0 #0f172a,
-        0 2px 0 #1e293b,
-        0 4px 0 #334155,
-        0 8px 16px rgba(0, 0, 0, 0.9),
-        0 0 25px rgba(245, 158, 11, 0.4);
-    }
+        .panel-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin: 15px 20px 5px 20px;
+            font-weight: 600;
+        }
 
-    /* Living Liquid-Metal Calligraphy Gradient */
-    @keyframes ferro-ink-surge {
-      0% { background-position: 0% 50%; filter: drop-shadow(0 0 8px rgba(0,0,0,0.95)) drop-shadow(0 0 2px rgba(245, 158, 11, 0.3)); transform: scale(1); }
-      35% { background-position: 50% 75%; filter: drop-shadow(0 0 16px rgba(2, 6, 23, 1)) drop-shadow(0 0 18px rgba(245, 158, 11, 0.7)) drop-shadow(0 0 35px rgba(217, 119, 6, 0.5)); transform: scale(1.01) skew(-0.3deg); }
-      70% { background-position: 100% 30%; filter: drop-shadow(0 0 24px rgba(0, 0, 0, 1)) drop-shadow(0 0 10px rgba(254, 243, 199, 0.6)); transform: scale(0.995) skew(0.3deg); }
-      100% { background-position: 0% 50%; filter: drop-shadow(0 0 8px rgba(0,0,0,0.95)) drop-shadow(0 0 2px rgba(245, 158, 11, 0.3)); transform: scale(1); }
-    }
+        /* Under-lit Button Dynamics */
+        .lore-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            text-align: left;
+            padding: 15px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 2px solid transparent;
+        }
 
-    .ferro-ink-title {
-      background: linear-gradient(135deg, #020617 0%, #1e1b18 20%, #fef3c7 38%, #d97706 48%, #030712 62%, #451a03 78%, #fbbf24 90%, #000000 100%);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: ferro-ink-surge 8s ease-in-out infinite;
-      display: inline-block;
-    }
+        .lore-btn:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: #ffffff;
+        }
 
-    /* Subtitle Pulse */
-    @keyframes subtitle-ink-oscillation {
-      0% { color: #f59e0b; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9); }
-      50% { color: #020617; text-shadow: 0 0 12px rgba(245, 158, 11, 0.85), 0 0 2px #fef3c7; }
-      100% { color: #f59e0b; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9); }
-    }
-    .subtitle-ferro-pulse { animation: subtitle-ink-oscillation 5s ease-in-out infinite; }
+        /* Active Button State with Under-lighting */
+        .lore-btn.active {
+            color: #ffffff;
+            font-weight: 600;
+            background-color: rgba(0, 210, 255, 0.05);
+            border-bottom: 2px solid var(--accent-glow);
+            box-shadow: 0 8px 15px -10px var(--accent-glow);
+        }
 
-    /* Horizon Rift Line */
-    .horizon-rift {
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(245, 158, 11, 0.2) 15%, rgba(254, 243, 199, 0.8) 50%, rgba(245, 158, 11, 0.2) 85%, transparent 100%);
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), 0 0 40px rgba(217, 119, 6, 0.3);
-      pointer-events: none;
-    }
+        /* Center Panel - Active Editor */
+        .center-panel {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: radial-gradient(circle at center, #171f2e 0%, var(--bg-color) 100%);
+        }
 
-    /* Esoteric Glyph Ring Animation */
-    @keyframes esoteric-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes esoteric-spin-rev {
-      0% { transform: rotate(360deg); }
-      100% { transform: rotate(0deg); }
-    }
-    @keyframes wand-levitate {
-      0% { transform: translateY(0px) rotate(-4deg); }
-      50% { transform: translateY(-8px) rotate(-1deg); }
-      100% { transform: translateY(0px) rotate(-4deg); }
-    }
-    @keyframes shockwave-pulse {
-      0% { transform: scale(0.6); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 0.25; }
-      100% { transform: scale(0.6); opacity: 0.8; }
-    }
+        .entry-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
 
-    .wand-float {
-      animation: wand-levitate 6s ease-in-out infinite;
-    }
-    .glyph-ring-cw {
-      animation: esoteric-spin 26s linear infinite;
-    }
-    .glyph-ring-ccw {
-      animation: esoteric-spin-rev 18s linear infinite;
-    }
-    .shockwave-node {
-      animation: shockwave-pulse 4s ease-in-out infinite;
-    }
+        .entry-meta {
+            color: var(--accent-glow);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
 
-    /* 3D Glass Bubble Windows */
-    .bubble-window-3d {
-      background: radial-gradient(circle at 35% 35%, rgba(18, 24, 38, 0.92), rgba(3, 5, 8, 0.98));
-      backdrop-filter: blur(28px);
-      border: 1px solid rgba(217, 119, 6, 0.45);
-      border-bottom: 3px solid rgba(254, 243, 199, 0.9);
-      border-radius: 2.5rem;
-      box-shadow: 
-        inset 0 3px 6px rgba(255, 255, 255, 0.2),
-        inset 0 -15px 30px rgba(0, 0, 0, 0.95),
-        0 25px 60px -12px rgba(0, 0, 0, 0.98),
-        0 0 40px rgba(217, 119, 6, 0.25);
-      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .bubble-window-3d:hover {
-      transform: translateY(-6px) scale(1.01);
-      border-color: rgba(245, 158, 11, 0.9);
-      border-bottom-color: #ffffff;
-      box-shadow: 
-        inset 0 4px 10px rgba(255, 255, 255, 0.35),
-        inset 0 -20px 40px rgba(0, 0, 0, 0.95),
-        0 35px 80px -15px rgba(0, 0, 0, 1),
-        0 0 60px rgba(245, 158, 11, 0.5);
-    }
+        .content-block {
+            background-color: rgba(26, 34, 51, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
 
-    .cellular-grid-3d {
-      display: grid;
-      grid-template-columns: repeat(1, minmax(0, 1fr));
-      gap: 3.5rem;
-    }
-    @media (min-width: 768px) {
-      .cellular-grid-3d {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .cellular-grid-3d > div:nth-child(even) {
-        transform: translateY(4rem);
-      }
-    }
+        .content-block h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-glow);
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+            padding-bottom: 5px;
+        }
 
-    /* Cinematic Landing Overlay */
-    #ink-transition-overlay {
-      position: fixed;
-      inset: 0;
-      background: #030407;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.9s ease;
-    }
-    #ink-transition-overlay.fade-out {
-      transform: scale(4);
-      opacity: 0;
-      pointer-events: none;
-    }
+        /* Right Panel - Relational Mapping */
+        .right-panel {
+            width: 320px;
+            background-color: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
 
-    @keyframes ink-writing-intro {
-      0% { opacity: 0; transform: scale(0.9) translateY(15px) perspective(500px) rotateX(15deg); filter: blur(4px); }
-      50% { opacity: 1; transform: scale(1.02) translateY(0) perspective(500px) rotateX(0deg); filter: blur(0px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); filter: drop-shadow(0 4px 15px rgba(0,0,0,0.9)); }
-    }
-    .ink-writing-intro { animation: ink-writing-intro 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .relation-card {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
 
-    /* Magic Splatter Cast Overlay */
-    #magic-splatter-fx {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle, #000000 0%, #1c1404 60%, #f59e0b 100%);
-      z-index: 50;
-      opacity: 0;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    @keyframes magic-cast-splatter {
-      0% { transform: scale(0) rotate(0deg); opacity: 0; filter: drop-shadow(0 0 0px #f59e0b); }
-      30% { transform: scale(1.4) rotate(45deg); opacity: 1; filter: drop-shadow(0 0 30px #f59e0b); border-radius: 40% 60% 70% 30% / 50% 30% 70% 50%; }
-      60% { transform: scale(2.2) rotate(90deg); opacity: 0.9; filter: drop-shadow(0 0 60px #d97706); border-radius: 70% 30% 30% 70% / 30% 70% 30% 70%; }
-      100% { transform: scale(4.5) rotate(180deg); opacity: 0; filter: drop-shadow(0 0 90px #fef3c7); }
-    }
-    #magic-splatter-fx.active {
-      animation: magic-cast-splatter 1.1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-  </style>
+        .relation-card:hover {
+            border-color: var(--accent-glow);
+        }
+
+        .relation-type {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .relation-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Custom Scrollbar for a premium look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
 </head>
-<body class="selection:bg-amber-500 selection:text-slate-950">
+<body>
 
-  <!-- Cinematic Ink-Writing & Zoom Opening Overlay -->
-  <div id="ink-transition-overlay">
-    <div class="text-center space-y-6 p-6 cursor-pointer" onclick="executeInkDive()">
-      <p class="text-xs uppercase tracking-[0.35em] subtitle-ferro-pulse font-bold">The Mythopoet's Quill &bull; Reality Scribe</p>
-      <h2 class="text-3xl sm:text-6xl font-black calligraphy-title ferro-ink-title ink-writing-intro">
-        The Mythopoets' Codices
-      </h2>
-      <div class="pt-8">
-        <span class="inline-block px-8 py-3.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs tracking-[0.25em] uppercase font-bold hover:bg-amber-500/40 transition-colors shadow-[0_0_40px_rgba(245,158,11,0.5)]">
-          Pierce the Ink Void ▶
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Real WebGL Raymarched Ferrofluid & Solid Gimbal Core Canvas -->
-  <div id="webgl-container"></div>
-  
-  <!-- Interactive 2D Meiosis Bubble Physics UI -->
-  <canvas id="ui-canvas"></canvas>
-
-  <!-- FOREGROUND DOM LAYER (FULL PORTFOLIO INTERFACE) -->
-  <div id="content-layer">
-
-    <!-- UPPER HEMISPHERE: COMMAND DECK -->
-    <header class="relative z-10 w-full border-b border-amber-900/30 bg-[#07090e]/70 backdrop-blur-xl p-6 lg:p-8 shadow-2xl">
-      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
-        
-        <a href="#vaults" target="_blank" rel="noopener noreferrer" class="bubble-window-3d w-full lg:w-80 p-6 flex items-center justify-between group">
-          <div>
-            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-bold embossed-text">Cell Alpha</span>
-            <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400 calligraphy-title embossed-text">Photos Vault</h2>
-          </div>
-          <span class="text-amber-500 text-xl group-hover:translate-x-1.5 transition-transform">✦</span>
-        </a>
-
-        <!-- Status Pill Indicating WebGL Core -->
-        <div class="flex items-center gap-3 px-6 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs tracking-[0.2em] uppercase font-bold shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-          <div class="w-3 h-3 rounded-full border border-dashed border-amber-400 animate-spin"></div>
-          <span class="embossed-text">Arbiter Engine &bull; Upper Void Stationed</span>
-        </div>
-
-        <a href="#gallery" target="_blank" rel="noopener noreferrer" class="bubble-window-3d w-full lg:w-80 p-6 flex items-center justify-between group">
-          <div>
-            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-500 font-bold embossed-text">Cell Beta</span>
-            <h2 class="text-base font-semibold text-slate-100 group-hover:text-amber-400 calligraphy-title embossed-text">Videos Vault</h2>
-          </div>
-          <span class="text-amber-500 text-xl group-hover:translate-x-1.5 transition-transform">✦</span>
-        </a>
-
-      </div>
+    <header>
+        THE MYTHOPOEIST'S CODICES
     </header>
 
-    <!-- EQUATORIAL HORIZON STAGE: DEAD-CENTER TITLE & MYTHOPOET'S FOUNTAIN PEN WAND -->
-    <section class="relative min-h-[75vh] flex items-center justify-center px-6 overflow-hidden">
-      
-      <!-- Central Horizon Split Line -->
-      <div class="horizon-rift top-1/2 -translate-y-1/2"></div>
-
-      <!-- LEFT FLANK: THE MYTHOPOET'S FOUNTAIN PEN WAND & ESOTERIC NODES -->
-      <div class="absolute left-4 sm:left-12 lg:left-24 top-1/2 -translate-y-1/2 z-20 pointer-events-none wand-float flex items-center justify-center">
+    <div class="workspace">
         
-        <!-- Esoteric Magical Glyph Orbit 1 (Clockwise) -->
-        <svg class="absolute w-56 h-56 text-amber-500/25 glyph-ring-cw" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 8" />
-          <polygon points="100,10 180,150 20,150" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4" />
-          <circle cx="100" cy="10" r="4" fill="#f59e0b" />
-          <circle cx="180" cy="150" r="4" fill="#f59e0b" />
-          <circle cx="20" cy="150" r="4" fill="#f59e0b" />
-        </svg>
+        <!-- LEFT PANEL: Lore Architecture -->
+        <div class="left-panel">
+            <div class="panel-header">Entities</div>
+            <button class="lore-btn active">Character Bio Setup</button>
+            <button class="lore-btn">Bestiary & Cryptids</button>
 
-        <!-- Esoteric Magical Glyph Orbit 2 (Counter-Clockwise) -->
-        <svg class="absolute w-44 h-44 text-amber-300/35 glyph-ring-ccw" viewBox="0 0 200 200">
-          <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="12 6" />
-          <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="0.6" />
-          <text x="100" y="32" font-family="'Cinzel Decorative', serif" font-size="8" fill="#fef3c7" text-anchor="middle">✦ O N T O L O G Y ✦</text>
-          <text x="100" y="176" font-family="'Cinzel Decorative', serif" font-size="8" fill="#fef3c7" text-anchor="middle">✦ V O I D ✦</text>
-        </svg>
+            <div class="panel-header">Societal Structures</div>
+            <button class="lore-btn">Governments & Factions</button>
+            <button class="lore-btn">Noble Houses</button>
 
-        <!-- Shockwave Pulse Node -->
-        <div class="absolute w-28 h-28 rounded-full border border-amber-400/40 shockwave-node bg-amber-500/5"></div>
+            <div class="panel-header">Cosmology</div>
+            <button class="lore-btn">Magical Systems</button>
+            <button class="lore-btn">Crucible Trials</button>
 
-        <!-- Ultra-Realistic Gold & Obsidian Fountain Pen Nib (SVG Vector Craft) -->
-        <svg class="relative w-28 sm:w-36 lg:w-44 h-auto drop-shadow-[0_0_35px_rgba(245,158,11,0.85)] filter" viewBox="0 0 240 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="nibGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#fffbeb" />
-              <stop offset="25%" stop-color="#fef08a" />
-              <stop offset="55%" stop-color="#d97706" />
-              <stop offset="85%" stop-color="#78350f" />
-              <stop offset="100%" stop-color="#1c1917" />
-            </linearGradient>
-            <linearGradient id="nibSteelGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#334155" />
-              <stop offset="50%" stop-color="#f8fafc" />
-              <stop offset="100%" stop-color="#0f172a" />
-            </linearGradient>
-            <filter id="glowFilt" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="6" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-
-          <!-- Outer Nib Body with Beveled Curves -->
-          <path d="M120 20 L165 140 C175 190, 185 240, 185 320 L55 320 C55 240, 65 190, 75 140 Z" fill="url(#nibGoldGrad)" stroke="#fef3c7" stroke-width="2.5" />
-
-          <!-- Center Steel / Chrome Inlay Strip -->
-          <path d="M120 20 L138 150 C144 200, 148 250, 148 320 L92 320 C92 250, 96 200, 102 150 Z" fill="url(#nibSteelGrad)" opacity="0.6" />
-
-          <!-- Intricate Filigree Engraving -->
-          <path d="M120 70 C105 100, 85 120, 88 170 C90 200, 105 210, 120 210 C135 210, 150 200, 152 170 C155 120, 135 100, 120 70 Z" fill="none" stroke="#fef3c7" stroke-width="1.8" stroke-dasharray="3 2" />
-          <circle cx="120" cy="180" r="14" fill="#030407" stroke="#f59e0b" stroke-width="2" />
-
-          <!-- Breather Hole with Liquid Ferrofluid Core Glow -->
-          <circle cx="120" cy="180" r="7" fill="#f59e0b" filter="url(#glowFilt)" />
-
-          <!-- Nib Tine Slit Spanning to Tip -->
-          <line x1="120" y1="20" x2="120" y2="173" stroke="#030407" stroke-width="3" stroke-linecap="round" />
-          <line x1="120" y1="20" x2="120" y2="173" stroke="#fef3c7" stroke-width="1" />
-
-          <!-- Gilded Tip Spark / Magic Node -->
-          <circle cx="120" cy="22" r="5" fill="#ffffff" filter="url(#glowFilt)" />
-        </svg>
-
-      </div>
-
-      <!-- DEAD CENTER TITLE: EQUATORIAL AXIS -->
-      <div class="relative z-30 text-center space-y-6 max-w-4xl mx-auto py-8">
-        
-        <div class="inline-flex items-center gap-3 px-6 py-2 rounded-full text-xs font-semibold tracking-[0.25em] uppercase bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-[0_0_25px_rgba(245,158,11,0.25)]">
-          <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-          <span class="embossed-text">&ldquo;Hmm, how interesting... I wonder what happens if I do this?&rdquo; &bull; The Mythopoet</span>
-        </div>
-        
-        <div class="relative">
-          <h1 class="text-4xl sm:text-7xl lg:text-8xl font-black tracking-tight calligraphy-title ferro-ink-title">
-            The Mythopoets' Codices
-          </h1>
-        </div>
-        
-        <p class="text-slate-300 body-editorial italic text-sm sm:text-base max-w-2xl mx-auto embossed-text leading-relaxed">
-          Fresh from sprinting out of a torrential forest storm, soaked and deeply annoyed by the interruption, he draws his golden nib and commands the living ferrofluid to dissect reality.
-        </p>
-
-      </div>
-
-    </section>
-
-    <!-- LOWER HEMISPHERE: MASTER STAGE & VAULT ARCHIVES -->
-    <main class="relative z-10 max-w-6xl mx-auto px-6 py-12 space-y-20">
-
-      <!-- MASTER CINEMATIC VIDEO PLAYER BUBBLE WINDOW WITH FERRO-SPLASH FX -->
-      <section id="master-stage" class="bubble-window-3d p-6 sm:p-10 space-y-6 relative overflow-hidden">
-        <div id="magic-splatter-fx">
-          <span class="calligraphy-title text-amber-300 text-xl tracking-widest embossed-text">⟡ &ldquo;You guys really don't want to do this.&rdquo; ⟡</span>
-        </div>
-        <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/30 flex items-center justify-center group shadow-2xl">
-          <div class="absolute inset-0 bg-gradient-to-t from-[#030407] via-transparent to-transparent opacity-80 z-10"></div>
-          <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-20 space-y-4">
-            <button onclick="triggerMagicSplatter('Master Cinematic Intro')" class="w-18 h-18 rounded-full bg-amber-500/20 border border-amber-500/60 flex items-center justify-center text-amber-400 shadow-[0_0_40px_rgba(245,158,11,0.5)] hover:scale-110 transition-transform cursor-pointer">
-              ▶
-            </button>
-            <p class="text-sm tracking-[0.2em] uppercase text-amber-300 font-bold calligraphy-title embossed-text">
-              Play Cinematic Intro &bull; A Tale from Empyrean Falls
-            </p>
-          </div>
-        </div>
-        <div class="flex flex-wrap items-center justify-between px-2 text-xs text-slate-300 gap-4">
-          <span class="embossed-text">Organism Status: Dual Core Raymarched Ferro-Dynamics (Arbiter & Nib Active)</span>
-          <div class="flex items-center gap-3">
-            <button onclick="setPlayerView('half')" class="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/40 transition-colors embossed-text">Half Bubble</button>
-            <button onclick="setPlayerView('wide')" class="px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/40 transition-colors embossed-text">Wide Core</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- CELLULAR 3D BUBBLE WINDOW GALLERY -->
-      <section id="gallery" class="space-y-12 pt-8">
-        <div class="text-center space-y-3">
-          <h2 class="text-3xl font-bold text-amber-400 calligraphy-title embossed-text">The Chronicle Archives & Collaborative Realms</h2>
-          <p class="text-slate-300 body-editorial italic text-sm embossed-text">Explore featured partner visions, stock fantasy vignettes, and independent narrative showcases.</p>
+            <div class="panel-header">Arsenal & Relics</div>
+            <button class="lore-btn">Magic Weapons & Armaments</button>
+            <button class="lore-btn">Amplifiers (Wands & Staffs)</button>
+            <button class="lore-btn">Magical Accessories</button>
+            
+            <div class="panel-header">Cartography</div>
+            <button class="lore-btn">Empyrean Matrix</button>
         </div>
 
-        <div class="cellular-grid-3d pb-12">
-          
-          <!-- Bubble Item 1 -->
-          <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="triggerMagicSplatter('Whispers of the Northern Spire')">
-            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
-              <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node I</span>
-              <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between pt-1">
-              <div>
-                <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Whispers of the Northern Spire</h3>
-                <p class="text-[11px] text-amber-400 embossed-text">Collaborative Showcase &bull; Realm of Aloria</p>
-              </div>
-              <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
-            </div>
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span class="embossed-text">Creator: Aloria Studios</span>
-              <a href="#contact" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
-            </div>
-          </div>
+        <!-- CENTER PANEL: Active Editor -->
+        <div class="center-panel">
+            <div class="entry-title">Victor Dragonclaw</div>
+            <div class="entry-meta">Mythic-Tier Warrior • House Gallant Lineage</div>
 
-          <!-- Bubble Item 2 -->
-          <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="triggerMagicSplatter('The Sunken Bastion of Oakhaven')">
-            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
-              <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node II</span>
-              <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
-              </div>
+            <div class="content-block">
+                <h3>Identity & Origin</h3>
+                <p>Victor's designation marks him as one of the few individuals capable of channeling draconic essence without losing their humanity. He is not a shapeshifter or a traditional mage; his abilities stem from a symbiotic bond with an ancestral draconic force that traces back to the Dawn of Creation.</p>
             </div>
-            <div class="flex items-center justify-between pt-1">
-              <div>
-                <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">The Sunken Bastion of Oakhaven</h3>
-                <p class="text-[11px] text-amber-400 embossed-text">Independent Partner &bull; Mythic Archive</p>
-              </div>
-              <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
-            </div>
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span class="embossed-text">Creator: Oakhaven Guild</span>
-              <a href="#contact" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
-            </div>
-          </div>
 
-          <!-- Bubble Item 3 -->
-          <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="triggerMagicSplatter('Echoes Across the Obsidian Reach')">
-            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
-              <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node III</span>
-              <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
-              </div>
+            <div class="content-block">
+                <h3>Core Abilities: Draconic Resonance</h3>
+                <p>When tapping into the latent power of his ancestor, Victor experiences amplified strength, heightened perception, and heat-based aura generation. His signature <strong>Dragon Claw Manifestation</strong> allows him to generate force-constructs shaped like talons to physically tear through magical barriers and shadow-constructs.</p>
             </div>
-            <div class="flex items-center justify-between pt-1">
-              <div>
-                <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Echoes Across the Obsidian Reach</h3>
-                <p class="text-[11px] text-amber-400 embossed-text">Featured Stock Reel &bull; Empyrean Era</p>
-              </div>
-              <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
+            
+            <div class="content-block">
+                <h3>Limitations & Overburn</h3>
+                <p>His power hinges on emotional restraint. Prolonged use causes internal overheating, and emotional triggers like fear or rage can lead to an uncontrolled manifestation, making him vulnerable to chaos-inducing forces.</p>
             </div>
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span class="embossed-text">Creator: Obsidian Core</span>
-              <a href="#contact" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
-            </div>
-          </div>
-
-          <!-- Bubble Item 4 -->
-          <div class="bubble-window-3d p-6 sm:p-8 space-y-4 cursor-pointer group" onclick="triggerMagicSplatter('Sanctum of the Wandering Scribe')">
-            <div class="relative w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden border border-amber-500/20 flex items-center justify-center shadow-inner">
-              <span class="text-xs uppercase tracking-widest text-amber-400/80 embossed-text">Cellular Node IV</span>
-              <div class="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <span class="text-amber-300 font-bold tracking-widest text-xs uppercase bg-black/80 px-4 py-2 rounded-full border border-amber-500/50">Absorb Node</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between pt-1">
-              <div>
-                <h3 class="text-sm font-semibold text-slate-100 calligraphy-title embossed-text">Sanctum of the Wandering Scribe</h3>
-                <p class="text-[11px] text-amber-400 embossed-text">Partner Showcase &bull; Codices Network</p>
-              </div>
-              <span class="text-amber-400 text-xs px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 embossed-text">Node</span>
-            </div>
-            <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-              <span class="embossed-text">Creator: Scribe Works</span>
-              <a href="#contact" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="text-amber-400 hover:underline embossed-text font-semibold">Creator Portal &rarr;</a>
-            </div>
-          </div>
-
         </div>
-      </section>
 
-    </main>
+        <!-- RIGHT PANEL: Relational Graph / Metadata -->
+        <div class="right-panel">
+            <div class="panel-header" style="margin: 0 0 15px 0;">Connected Nodes</div>
+            
+            <div class="relation-card">
+                <div class="relation-type">Companion / Ally</div>
+                <div class="relation-name">Alister Grant</div>
+            </div>
+
+            <div class="relation-card">
+                <div class="relation-type">Affiliated Faction</div>
+                <div class="relation-name">The Shining Knights</div>
+            </div>
+
+            <div class="relation-card">
+                <div class="relation-type">Antagonistic Force</div>
+                <div class="relation-name">Nightmares (Moros)</div>
+            </div>
+
+            <div class="relation-card">
+                <div class="relation-type">Legendary Artifact</div>
+                <div class="relation-name">The Sword Mimic</div>
+            </div>
+        </div>
+
+    </div>
 
-    <!-- FOOTER -->
-    <footer class="w-full flex items-center justify-between p-8 border-t border-amber-900/40 bg-[#07090e]/90 text-xs text-slate-400">
-      <span>The Mythopoets' Codices &bull; Reality Scribed</span>
-      <span class="text-amber-500 font-bold">Autonomous Arbiter & Wand Online</span>
-    </footer>
-
-  </div>
-
-  <!-- THREE.JS PIPELINE (DUAL FERROFLUID RAYMARCHER: ARBITER + PEN NIB BLEED) -->
-  <script>
-    /* =========================================================================
-       1. THREE.JS PIPELINE & PERSPECTIVE
-       ========================================================================= */
-    const container = document.getElementById('webgl-container');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.z = 11;
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
-
-    // Assembly 1: Arbiter Engine in Upper-Left Void
-    const arbiterAssembly = new THREE.Group();
-    arbiterAssembly.position.set(-2.0, 1.4, 0);
-    arbiterAssembly.scale.set(0.9, 0.9, 0.9);
-    scene.add(arbiterAssembly);
-
-    // Assembly 2: Pen Nib Ferrofluid Bleed Emitter (Positioned at Left Flank Horizon)
-    const penNibEmitter = new THREE.Group();
-    penNibEmitter.position.set(-3.2, 0.0, 0);
-    penNibEmitter.scale.set(0.65, 0.65, 0.65);
-    scene.add(penNibEmitter);
-
-    /* =========================================================================
-       2. REAL GPU-RAYMARCHED FERROFLUID SHADER
-       ========================================================================= */
-    const ferroVertexShader = `
-      varying vec2 vUv;
-      varying vec3 vWorldPosition;
-      void main() {
-        vUv = uv;
-        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-        vWorldPosition = worldPosition.xyz;
-        gl_Position = projectionMatrix * viewMatrix * worldPosition;
-      }
-    `;
-
-    const ferroFragmentShader = `
-      uniform float uTime;
-      uniform vec2 uResolution;
-      varying vec2 vUv;
-      varying vec3 vWorldPosition;
-
-      float smin(float a, float b, float k) {
-        float h = max(k - abs(a - b), 0.0) / k;
-        return min(a, b) - h * h * h * k * (1.0 / 6.0);
-      }
-
-      mat2 rot(float a) {
-        float s = sin(a), c = cos(a);
-        return mat2(c, -s, s, c);
-      }
-
-      float map(vec3 p) {
-        vec3 q = p;
-        q.yz *= rot(uTime * 0.25);
-        q.xz *= rot(uTime * 0.18);
-
-        float baseSphere = length(q) - 1.45;
-
-        // Dynamic oscillating spikes
-        vec3 sp = q * 4.2;
-        float spikes = pow(abs(sin(sp.x + uTime * 1.2) * sin(sp.y + uTime * 0.9) * sin(sp.z - uTime * 0.6)), 3.5) * 0.52;
-
-        // Liquid tendrils reaching outward
-        vec3 t1 = q - vec3(sin(uTime * 1.2) * 1.5, cos(uTime * 0.9) * 1.2, sin(uTime * 0.7) * 0.8);
-        float tendril1 = length(t1) - 0.42;
-
-        vec3 t2 = q - vec3(cos(uTime * 0.8) * -1.6, sin(uTime * 1.1) * -1.1, cos(uTime * 0.5) * 1.0);
-        float tendril2 = length(t2) - 0.38;
-
-        float d = smin(baseSphere - spikes, tendril1, 0.65);
-        d = smin(d, tendril2, 0.65);
-
-        float hollow = length(q + vec3(0.3, -0.2, 0.4)) - 0.85;
-        d = max(d, -hollow);
-
-        return d;
-      }
-
-      vec3 calcNormal(vec3 p) {
-        const float h = 0.001;
-        const vec2 k = vec2(1.0, -1.0);
-        return normalize(
-          k.xyy * map(p + k.xyy * h) +
-          k.yyx * map(p + k.yyx * h) +
-          k.yxy * map(p + k.yxy * h) +
-          k.xxx * map(p + k.xxx * h)
-        );
-      }
-
-      void main() {
-        vec3 ro = cameraPosition;
-        vec3 rd = normalize(vWorldPosition - ro);
-
-        float t = 0.0;
-        float hit = -1.0;
-        for (int i = 0; i < 72; i++) {
-          vec3 p = ro + rd * t;
-          vec3 localP = (inverse(modelMatrix) * vec4(p, 1.0)).xyz;
-          float d = map(localP);
-          if (d < 0.002) {
-            hit = t;
-            break;
-          }
-          t += d * 0.72;
-          if (t > 20.0) break;
-        }
-
-        if (hit > 0.0) {
-          vec3 p = ro + rd * hit;
-          vec3 localP = (inverse(modelMatrix) * vec4(p, 1.0)).xyz;
-          vec3 n = calcNormal(localP);
-          vec3 v = -rd;
-
-          vec3 lightDir1 = normalize(vec3(2.5, 4.0, 3.0));
-          vec3 lightDir2 = normalize(vec3(-3.0, -2.0, -2.0));
-
-          float fresnel = pow(1.0 - max(dot(n, v), 0.0), 3.0);
-
-          vec3 h1 = normalize(lightDir1 + v);
-          float spec1 = pow(max(dot(n, h1), 0.0), 90.0);
-
-          vec3 h2 = normalize(lightDir2 + v);
-          float spec2 = pow(max(dot(n, h2), 0.0), 45.0);
-
-          vec3 albedo = vec3(0.015, 0.012, 0.01);
-          vec3 goldSpec = vec3(1.0, 0.82, 0.45) * spec1 * 2.2;
-          vec3 goldRim  = vec3(0.96, 0.62, 0.15) * fresnel * 1.6;
-          vec3 fillSpec = vec3(0.4, 0.25, 0.1) * spec2;
-
-          vec3 finalColor = albedo + goldSpec + goldRim + fillSpec;
-          gl_FragColor = vec4(finalColor, 1.0);
-        } else {
-          discard;
-        }
-      }
-    `;
-
-    // Shader Material instance for Arbiter
-    const ferroGeo = new THREE.BoxGeometry(5.0, 5.0, 5.0);
-    const ferroMat = new THREE.ShaderMaterial({
-      vertexShader: ferroVertexShader,
-      fragmentShader: ferroFragmentShader,
-      uniforms: {
-        uTime: { value: 0 },
-        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-      },
-      transparent: true
-    });
-    const ferrofluidMesh = new THREE.Mesh(ferroGeo, ferroMat);
-    arbiterAssembly.add(ferrofluidMesh);
-
-    // Shader Material instance for Fountain Pen Nib Emitter
-    const nibFerroGeo = new THREE.BoxGeometry(3.5, 3.5, 3.5);
-    const nibFerroMesh = new THREE.Mesh(nibFerroGeo, ferroMat);
-    penNibEmitter.add(nibFerroMesh);
-
-    /* =========================================================================
-       3. SOLID AGED-BRASS GIMBAL ARMATURE (ARBITER)
-       ========================================================================= */
-    const gimbalOuter = new THREE.Group();
-    const gimbalMid   = new THREE.Group();
-    const gimbalInner = new THREE.Group();
-
-    gimbalMid.add(gimbalInner);
-    gimbalOuter.add(gimbalMid);
-    arbiterAssembly.add(gimbalOuter);
-
-    function createSolidBrassRing(radius, tubeRadius) {
-      const geo = new THREE.TorusGeometry(radius, tubeRadius, 24, 120);
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0xd97706,
-        roughness: 0.35,
-        metalness: 0.85
-      });
-      return new THREE.Mesh(geo, mat);
-    }
-
-    const ringOuter = createSolidBrassRing(3.4, 0.045);
-    const ringMid   = createSolidBrassRing(2.8, 0.038);
-    const ringInner = createSolidBrassRing(2.2, 0.030);
-
-    gimbalOuter.add(ringOuter);
-    gimbalMid.add(ringMid);
-    gimbalInner.add(ringInner);
-
-    // Warm Lighting
-    const ambientLight = new THREE.AmbientLight(0xffedd5, 0.8);
-    scene.add(ambientLight);
-
-    const dirLight1 = new THREE.DirectionalLight(0xf59e0b, 2.5);
-    dirLight1.position.set(5, 8, 5);
-    scene.add(dirLight1);
-
-    const dirLight2 = new THREE.DirectionalLight(0xb45309, 1.2);
-    dirLight2.position.set(-5, -4, -3);
-    scene.add(dirLight2);
-
-    /* =========================================================================
-       4. PROCEDURAL LIGHTNING ARCS
-       ========================================================================= */
-    const lightningCount = 3;
-    const lightningLines = [];
-    const lightningSegments = 16;
-
-    for (let i = 0; i < lightningCount; i++) {
-      const geo = new THREE.BufferGeometry();
-      const positions = new Float32Array(lightningSegments * 3);
-      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const mat = new THREE.LineBasicMaterial({
-        color: 0xfef3c7,
-        transparent: true,
-        opacity: 0.0,
-        blending: THREE.AdditiveBlending
-      });
-      const line = new THREE.Line(geo, mat);
-      arbiterAssembly.add(line);
-      lightningLines.push({ line, life: 0 });
-    }
-
-    function updateLightning() {
-      lightningLines.forEach((arc) => {
-        arc.life -= 0.05;
-        if (arc.life <= 0) {
-          if (Math.random() < 0.12) {
-            arc.life = 0.4 + Math.random() * 0.3;
-            const startAngle = Math.random() * Math.PI * 2;
-            const ringRadius = 2.4 + Math.random() * 0.8;
-            const startPt = new THREE.Vector3(
-              Math.cos(startAngle) * ringRadius,
-              Math.sin(startAngle) * ringRadius,
-              (Math.random() - 0.5) * 0.8
-            );
-            const endPt = new THREE.Vector3(
-              (Math.random() - 0.5) * 1.2,
-              (Math.random() - 0.5) * 1.2,
-              (Math.random() - 0.5) * 1.2
-            );
-
-            const pos = arc.line.geometry.attributes.position.array;
-            for (let j = 0; j < lightningSegments; j++) {
-              const alpha = j / (lightningSegments - 1);
-              const cur = new THREE.Vector3().lerpVectors(startPt, endPt, alpha);
-              if (j > 0 && j < lightningSegments - 1) {
-                cur.x += (Math.random() - 0.5) * 0.35;
-                cur.y += (Math.random() - 0.5) * 0.35;
-                cur.z += (Math.random() - 0.5) * 0.35;
-              }
-              pos[j * 3]     = cur.x;
-              pos[j * 3 + 1] = cur.y;
-              pos[j * 3 + 2] = cur.z;
-            }
-            arc.line.geometry.attributes.position.needsUpdate = true;
-          }
-        }
-        arc.line.material.opacity = Math.max(0, arc.life * 2.0);
-      });
-    }
-
-    /* =========================================================================
-       5. 2D MEIOSIS CANVAS BUBBLE PHYSICS UI (LINKED TO VAULTS)
-       ========================================================================= */
-    const uiCanvas = document.getElementById('ui-canvas');
-    const ctx = uiCanvas.getContext('2d');
-    let width = (uiCanvas.width = window.innerWidth);
-    let height = (uiCanvas.height = window.innerHeight);
-
-    const mouse = { x: -9999, y: -9999 };
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-    window.addEventListener('mouseleave', () => {
-      mouse.x = -9999;
-      mouse.y = -9999;
-    });
-
-    const bubbleData = [
-      { label: "PHOTOS VAULT", relX: 0.11, relY: 0.28, r: 42, group: 1, url: "#vaults" },
-      { label: "VIDEOS VAULT", relX: 0.07, relY: 0.72, r: 40, group: 1, url: "#gallery" },
-      { label: "CHRONICLES",   relX: 0.14, relY: 0.86, r: 38, group: 1, url: "#gallery" },
-      { label: "ALORIA",       relX: 0.89, relY: 0.28, r: 36, group: 2, url: "#contact" },
-      { label: "OAKHAVEN",     relX: 0.93, relY: 0.50, r: 42, group: 2, url: "#contact" },
-      { label: "EMPYREAN",     relX: 0.87, relY: 0.74, r: 40, group: 2, url: "#contact" }
-    ];
-
-    const bubbles = bubbleData.map(b => ({
-      ...b,
-      x: width * b.relX,
-      y: height * b.relY,
-      originX: width * b.relX,
-      originY: height * b.relY,
-      vx: 0,
-      vy: 0
-    }));
-
-    uiCanvas.addEventListener('click', (e) => {
-      const rect = uiCanvas.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-
-      bubbles.forEach(b => {
-        const dist = Math.hypot(clickX - b.x, clickY - b.y);
-        if (dist <= b.r && b.url) {
-          triggerMagicSplatter(b.label);
-          setTimeout(() => {
-            window.open(b.url, '_blank', 'noopener,noreferrer');
-          }, 450);
-        }
-      });
-    });
-
-    function drawLiquidBridge(b1, b2) {
-      const dx = b2.x - b1.x;
-      const dy = b2.y - b1.y;
-      const dist = Math.hypot(dx, dy);
-      const maxBridge = (b1.r + b2.r) * 2.2;
-
-      if (dist < maxBridge) {
-        const bridgeWidth = Math.max(1.5, (1 - dist / maxBridge) * 10);
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(217, 119, 6, 0.35)";
-        ctx.lineWidth = bridgeWidth;
-        ctx.moveTo(b1.x, b1.y);
-        ctx.lineTo(b2.x, b2.y);
-        ctx.stroke();
-
-        ctx.lineWidth = 0.8;
-        ctx.strokeStyle = "rgba(254, 243, 199, 0.5)";
-        ctx.stroke();
-        ctx.restore();
-      }
-    }
-
-    function updateMeiosisUI() {
-      ctx.clearRect(0, 0, width, height);
-
-      for (let i = 0; i < bubbles.length; i++) {
-        for (let j = i + 1; j < bubbles.length; j++) {
-          if (bubbles[i].group === bubbles[j].group) {
-            drawLiquidBridge(bubbles[i], bubbles[j]);
-          }
-        }
-      }
-
-      bubbles.forEach(b => {
-        b.vx += (b.originX - b.x) * 0.03;
-        b.vy += (b.originY - b.y) * 0.03;
-
-        const dx = b.x - mouse.x;
-        const dy = b.y - mouse.y;
-        const dist = Math.hypot(dx, dy);
-        const repelRadius = 140;
-
-        if (dist < repelRadius && dist > 0) {
-          const force = (repelRadius - dist) / repelRadius;
-          b.vx += (dx / dist) * force * 7.0;
-          b.vy += (dy / dist) * force * 7.0;
-        }
-
-        b.vx *= 0.86;
-        b.vy *= 0.86;
-        b.x += b.vx;
-        b.y += b.vy;
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        const grad = ctx.createRadialGradient(
-          b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.1,
-          b.x, b.y, b.r
-        );
-        grad.addColorStop(0, "rgba(55, 40, 20, 0.75)");
-        grad.addColorStop(0.75, "rgba(10, 8, 6, 0.95)");
-        grad.addColorStop(1, "rgba(2, 2, 2, 0.98)");
-        ctx.fillStyle = grad;
-        ctx.fill();
-
-        ctx.lineWidth = 1.4;
-        ctx.strokeStyle = "rgba(245, 158, 11, 0.6)";
-        ctx.stroke();
-
-        if (b.label) {
-          ctx.fillStyle = "#fef3c7";
-          ctx.font = "700 8.5px 'Cinzel Decorative', serif";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(b.label, b.x, b.y);
-        }
-        ctx.restore();
-      });
-    }
-
-    /* =========================================================================
-       6. UNIFIED ANIMATION TICK LOOP
-       ========================================================================= */
-    const clock = new THREE.Clock();
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
-
-      ferroMat.uniforms.uTime.value = elapsed;
-
-      // Uncoupled 3-axis gimbal momentum
-      gimbalOuter.rotation.z = elapsed * 0.15;
-      gimbalMid.rotation.y   = -elapsed * 0.22;
-      gimbalInner.rotation.x = elapsed * 0.35;
-
-      // Silent autonomous drift of Arbiter in Upper Void
-      arbiterAssembly.position.x = -2.0 + Math.sin(elapsed * 0.3) * 0.25;
-      arbiterAssembly.position.y = 1.4 + Math.cos(elapsed * 0.25) * 0.18;
-
-      // Fountain Pen Nib Emitter Oscillation along Left Flank Horizon
-      penNibEmitter.position.x = -3.2 + Math.sin(elapsed * 0.5) * 0.15;
-      penNibEmitter.position.y = 0.0 + Math.cos(elapsed * 0.4) * 0.12;
-
-      updateLightning();
-      renderer.render(scene, camera);
-      updateMeiosisUI();
-    }
-
-    animate();
-
-    /* =========================================================================
-       7. WINDOW RESIZE & INTERACTIVE TRIGGERS
-       ========================================================================= */
-    window.addEventListener('resize', () => {
-      width = uiCanvas.width = window.innerWidth;
-      height = uiCanvas.height = window.innerHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-      ferroMat.uniforms.uResolution.value.set(width, height);
-
-      bubbles.forEach(b => {
-        b.originX = width * b.relX;
-        b.originY = height * b.relY;
-      });
-    });
-
-    function executeInkDive() {
-      const overlay = document.getElementById('ink-transition-overlay');
-      overlay.classList.add('fade-out');
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
-          overlay.classList.remove('fade-out');
-        }, 1000);
-      }, 900);
-    }
-
-    function triggerMagicSplatter(title) {
-      const fx = document.getElementById('magic-splatter-fx');
-      fx.classList.add('active');
-      const stageText = document.querySelector('#master-stage p');
-      if (stageText) {
-        stageText.innerHTML = `Scribing: ${title} &bull; &ldquo;You guys really don't want to do this.&rdquo;`;
-      }
-      setTimeout(() => {
-        fx.classList.remove('active');
-      }, 1100);
-    }
-
-    function setPlayerView(mode) {
-      const stage = document.getElementById('master-stage');
-      if (mode === 'half') {
-        stage.style.maxWidth = '780px';
-        stage.style.margin = '0 auto';
-      } else {
-        stage.style.maxWidth = 'none';
-      }
-    }const FUNCTION_URL = "https://rwbeixejqhjipogpwcyx.supabase.co/functions/v1/ferox-brain";
-const ANON_KEY = "sb_publishable_yOxCcgWF-ZLgauFFfJO9xQ_7pv8kuco;
-
-async function sendPrompt(userPromptText) {
-  try {
-    const response = await fetch(FUNCTION_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${ANON_KEY}`
-      },
-      body: JSON.stringify({
-        prompt: userPromptText
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log("FEROX Response Object:", data);
-    return data;
-  } catch (err) {
-    console.error("Transmission failed:", err);
-  }
-}
-
-// Example usage:
-sendPrompt("Align third pole and initiate acoustic scan.");
-  </script>
 </body>
 </html>
