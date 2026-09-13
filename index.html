@@ -993,7 +993,36 @@
       } else {
         stage.style.maxWidth = 'none';
       }
+    }const FUNCTION_URL = "https://rwbeixejqhjipogpwcyx.supabase.co/functions/v1/ferox-brain";
+const ANON_KEY = "sb_publishable_yOxCcgWF-ZLgauFFfJO9xQ_7pv8kuco;
+
+async function sendPrompt(userPromptText) {
+  try {
+    const response = await fetch(FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ANON_KEY}`
+      },
+      body: JSON.stringify({
+        prompt: userPromptText
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
     }
+
+    const data = await response.json();
+    console.log("FEROX Response Object:", data);
+    return data;
+  } catch (err) {
+    console.error("Transmission failed:", err);
+  }
+}
+
+// Example usage:
+sendPrompt("Align third pole and initiate acoustic scan.");
   </script>
 </body>
 </html>
