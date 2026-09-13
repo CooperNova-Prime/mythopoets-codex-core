@@ -1,280 +1,573 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Mythopoeist's Codices</title>
-    <!-- Utilizing Google Fonts for a premium UI feel -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0f141e; /* Deep matte navy */
-            --panel-bg: #1a2233; /* Slightly lighter matte navy for panels */
-            --accent-glow: #00d2ff; /* Under-lighting dynamic */
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --border-color: #2a3449;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Mythopoeists’ Codices — System Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-canvas: #f9f8f6;
+      --bg-card: #ffffff;
+      --bg-vellum: #fdfbf7;
+      --border-soft: #e6dfd5;
+      --border-accent: #d4af37;
+      --gold-dark: #b8860b;
+      --emerald-dark: #1e3a2b;
+      --text-main: #1a1a1a;
+      --text-muted: #57534e;
+      --surface-glass: rgba(255, 255, 255, 0.85);
+      --shadow-sm: 0 4px 12px rgba(26, 26, 26, 0.05);
+      --shadow-md: 0 10px 25px rgba(26, 26, 26, 0.08);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 0 1.5rem 4rem;
+    }
 
-        /* Top Navigation / Header */
-        header {
-            height: 60px;
-            background-color: var(--panel-bg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            padding: 0 24px;
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            color: #ffffff;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
+    /* Master Top Bar */
+    header.master-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: var(--surface-glass);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.85rem 2rem;
+      margin: 0 -1.5rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
 
-        /* Main Workspace */
-        .workspace {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 60px);
-        }
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-        /* Left Panel - Lore Categories */
-        .left-panel {
-            width: 300px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-            overflow-y: auto;
-        }
+    .brand-title span {
+      color: var(--gold-dark);
+    }
 
-        .panel-header {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 1.5px;
-            margin: 15px 20px 5px 20px;
-            font-weight: 600;
-        }
+    nav.master-nav ul {
+      display: flex;
+      list-style: none;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-        /* Under-lit Button Dynamics */
-        .lore-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            text-align: left;
-            padding: 15px 20px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border-bottom: 2px solid transparent;
-        }
+    nav.master-nav a {
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: var(--text-muted);
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
 
-        .lore-btn:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-            color: #ffffff;
-        }
+    nav.master-nav a:hover,
+    nav.master-nav a.active {
+      color: var(--text-main);
+      background: var(--bg-vellum);
+      border-color: var(--border-accent);
+    }
 
-        /* Active Button State with Under-lighting */
-        .lore-btn.active {
-            color: #ffffff;
-            font-weight: 600;
-            background-color: rgba(0, 210, 255, 0.05);
-            border-bottom: 2px solid var(--accent-glow);
-            box-shadow: 0 8px 15px -10px var(--accent-glow);
-        }
+    /* Layout Containers */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        /* Center Panel - Active Editor */
-        .center-panel {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            background: radial-gradient(circle at center, #171f2e 0%, var(--bg-color) 100%);
-        }
+    .section-title-wrap {
+      border-bottom: 2px solid var(--border-accent);
+      padding-bottom: 0.5rem;
+      margin: 3.5rem 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
 
-        .entry-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
+    h1, h2, h3, h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--text-main);
+    }
 
-        .entry-meta {
-            color: var(--accent-glow);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 30px;
-        }
+    h1 {
+      font-size: 2.3rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.03em;
+    }
 
-        .content-block {
-            background-color: rgba(26, 34, 51, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
+    h2 {
+      font-size: 1.45rem;
+      letter-spacing: 0.04em;
+    }
 
-        .content-block h3 {
-            font-family: 'Cinzel', serif;
-            color: var(--accent-glow);
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
-            padding-bottom: 5px;
-        }
+    h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      color: var(--emerald-dark);
+    }
 
-        /* Right Panel - Relational Mapping */
-        .right-panel {
-            width: 320px;
-            background-color: var(--panel-bg);
-            border-left: 1px solid var(--border-color);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+    .lead-tagline {
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--gold-dark);
+      margin-bottom: 2rem;
+      font-weight: 500;
+    }
 
-        .relation-card {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
+    /* Hero / Landing Section */
+    .landing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2.5rem;
+    }
 
-        .relation-card:hover {
-            border-color: var(--accent-glow);
-        }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+    }
 
-        .relation-type {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.25rem;
+    }
 
-        .relation-name {
-            font-weight: 600;
-            color: #ffffff;
-        }
+    .module-box {
+      background: var(--bg-vellum);
+      border: 1px solid var(--border-soft);
+      border-left: 4px solid var(--border-accent);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+    }
 
-        /* Custom Scrollbar for a premium look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-    </style>
+    .module-box h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .module-box p, .module-box li {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    ul.feature-list {
+      list-style-position: inside;
+      margin-top: 0.5rem;
+    }
+
+    ul.feature-list li {
+      margin-bottom: 0.35rem;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    thead th {
+      background-color: var(--bg-vellum);
+      color: var(--text-main);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.85rem 1rem;
+    }
+
+    tbody td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+      color: var(--text-muted);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    td strong {
+      color: var(--text-main);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-soft);
+      padding: 2.5rem 0 1rem;
+      margin-top: 4rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        THE MYTHOPOEIST'S CODICES
-    </header>
-
-    <div class="workspace">
-        
-        <!-- LEFT PANEL: Lore Architecture -->
-        <div class="left-panel">
-            <div class="panel-header">Entities</div>
-            <button class="lore-btn active">Character Bio Setup</button>
-            <button class="lore-btn">Bestiary & Cryptids</button>
-
-            <div class="panel-header">Societal Structures</div>
-            <button class="lore-btn">Governments & Factions</button>
-            <button class="lore-btn">Noble Houses</button>
-
-            <div class="panel-header">Cosmology</div>
-            <button class="lore-btn">Magical Systems</button>
-            <button class="lore-btn">Crucible Trials</button>
-
-            <div class="panel-header">Arsenal & Relics</div>
-            <button class="lore-btn">Magic Weapons & Armaments</button>
-            <button class="lore-btn">Amplifiers (Wands & Staffs)</button>
-            <button class="lore-btn">Magical Accessories</button>
-            
-            <div class="panel-header">Cartography</div>
-            <button class="lore-btn">Empyrean Matrix</button>
-        </div>
-
-        <!-- CENTER PANEL: Active Editor -->
-        <div class="center-panel">
-            <div class="entry-title">Victor Dragonclaw</div>
-            <div class="entry-meta">Mythic-Tier Warrior • House Gallant Lineage</div>
-
-            <div class="content-block">
-                <h3>Identity & Origin</h3>
-                <p>Victor's designation marks him as one of the few individuals capable of channeling draconic essence without losing their humanity. He is not a shapeshifter or a traditional mage; his abilities stem from a symbiotic bond with an ancestral draconic force that traces back to the Dawn of Creation.</p>
-            </div>
-
-            <div class="content-block">
-                <h3>Core Abilities: Draconic Resonance</h3>
-                <p>When tapping into the latent power of his ancestor, Victor experiences amplified strength, heightened perception, and heat-based aura generation. His signature <strong>Dragon Claw Manifestation</strong> allows him to generate force-constructs shaped like talons to physically tear through magical barriers and shadow-constructs.</p>
-            </div>
-            
-            <div class="content-block">
-                <h3>Limitations & Overburn</h3>
-                <p>His power hinges on emotional restraint. Prolonged use causes internal overheating, and emotional triggers like fear or rage can lead to an uncontrolled manifestation, making him vulnerable to chaos-inducing forces.</p>
-            </div>
-        </div>
-
-        <!-- RIGHT PANEL: Relational Graph / Metadata -->
-        <div class="right-panel">
-            <div class="panel-header" style="margin: 0 0 15px 0;">Connected Nodes</div>
-            
-            <div class="relation-card">
-                <div class="relation-type">Companion / Ally</div>
-                <div class="relation-name">Alister Grant</div>
-            </div>
-
-            <div class="relation-card">
-                <div class="relation-type">Affiliated Faction</div>
-                <div class="relation-name">The Shining Knights</div>
-            </div>
-
-            <div class="relation-card">
-                <div class="relation-type">Antagonistic Force</div>
-                <div class="relation-name">Nightmares (Moros)</div>
-            </div>
-
-            <div class="relation-card">
-                <div class="relation-type">Legendary Artifact</div>
-                <div class="relation-name">The Sword Mimic</div>
-            </div>
-        </div>
-
+  <!-- Master Navigation -->
+  <header class="master-header">
+    <div class="brand-title">
+      <span>✦</span> The Mythopoeists’ Codices
     </div>
+    <nav class="master-nav">
+      <ul>
+        <li><a href="#welcome">Welcome Portal</a></li>
+        <li><a href="#manuscript">Manuscript</a></li>
+        <li><a href="#world-engine">World Engine</a></li>
+        <li><a href="#archive">Archive</a></li>
+        <li><a href="#social">Social</a></li>
+        <li><a href="#emporium">Emporium</a></li>
+        <li><a href="#vault-ip">Vault &amp; IP</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <section id="welcome" class="landing-card">
+      <h1>The Mythopoeists’ Codices</h1>
+      <p class="lead-tagline">"Where Living Lore Becomes Sovereign Creation: Architect Realms, Forge Community, Own the Canon."</p>
+      
+      <div class="grid-2">
+        <div class="module-box">
+          <h4>First Arrival &amp; Welcome Gateway</h4>
+          <p>The dedicated public entrance serving all direct traffic, community links, and prospective creators.</p>
+          <ul class="feature-list">
+            <li><strong>Dual Pathways:</strong> [Enter the Grand Archive] for public reading &amp; [Awaken Your Codex] for onboarding.</li>
+            <li><strong>Curated Showcase:</strong> Live community highlights, trending manuscripts, and regional events.</li>
+            <li><strong>Zero Data-Mining Charter:</strong> Non-negotiable client-side IP guarantees clearly displayed on initial load.</li>
+          </ul>
+        </div>
+        <div class="module-box">
+          <h4>Authorship Induction (Onboarding Flow)</h4>
+          <p>A multi-step registration sequence triggered during initial account setup.</p>
+          <ul class="feature-list">
+            <li><strong>Legal &amp; Pen Name:</strong> Copyright registry credentials and public pseudonyms.</li>
+            <li><strong>Discipline Specialization:</strong> Epic fiction, screenwriting, game systems, or world-architecture.</li>
+            <li><strong>Commercial Intent:</strong> Direct-to-consumer print-on-demand, traditional query, or web serialization.</li>
+            <li><strong>Local Geo-Discovery:</strong> Privacy calibration (exact radius, city-wide mask, or fully private).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: MANUSCRIPT -->
+    <section id="manuscript">
+      <div class="section-title-wrap">
+        <h2>Tab 1: Manuscript Engine</h2>
+        <span>Composition &amp; Industry Standards</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="module-box">
+          <h4>Sub-Tab 1.1: Editor &amp; Canvas</h4>
+          <ul class="feature-list">
+            <li><strong>Surface Selection:</strong> Radiant Sunlit Vellum, Aged Parchment, and Pristine White modes.</li>
+            <li><strong>Directory Tree:</strong> Volumes &rarr; Acts &rarr; Chapters &rarr; Scenes hierarchy with live word targets.</li>
+            <li><strong>Dynamic Chapter Headers:</strong> Ornate drop-caps, Arabic and Roman numeral sequencing.</li>
+            <li><strong>Chapter Brief Box:</strong> Dedicated 2-to-3 line summary field for scene tension and narrative stakes.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 1.2: Outline &amp; Beats</h4>
+          <ul class="feature-list">
+            <li><strong>Drag-and-Drop Beats:</strong> Horizontal timeline board and act cards.</li>
+            <li><strong>Synchronized Reordering:</strong> Shuffling scenes immediately realigns chapter structure in the main editor.</li>
+            <li><strong>Dual Script/Prose Conversion:</strong> One-click conversion between prose and WGA-standard teleplay format.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 1.3: Scene Metadata &amp; Character HUD</h4>
+          <ul class="feature-list">
+            <li><strong>Magnetic Character HUD:</strong> Floating draggable stat card that snaps flush to the viewport borders.</li>
+            <li><strong>Attributes Wheel:</strong> Dynamic radar chart tracking character traits, social tiers, and stamina.</li>
+            <li><strong>Context Linker:</strong> Tag characters or items with inline links to pull live data from the Archive.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Narrative Standards Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Format Tier</th>
+              <th>Word Count / Page Standard</th>
+              <th>Structural Focus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Microfiction &amp; Flash</strong></td>
+              <td>1 – 1,500 words</td>
+              <td>Single impactful scene, rapid thematic closure.</td>
+            </tr>
+            <tr>
+              <td><strong>Short Story &amp; Novelette</strong></td>
+              <td>1,500 – 17,500 words</td>
+              <td>Focused cast, single primary plot obstacle and resolution.</td>
+            </tr>
+            <tr>
+              <td><strong>Novella &amp; Standard Novel</strong></td>
+              <td>17,500 – 90,000 words</td>
+              <td>Full three-act arc with interconnected character subplots.</td>
+            </tr>
+            <tr>
+              <td><strong>Epic / Speculative Novel</strong></td>
+              <td>100,000 – 180,000+ words</td>
+              <td>Extensive world mechanics, deep multi-POV narratives.</td>
+            </tr>
+            <tr>
+              <td><strong>Episodic TV &amp; Feature Film</strong></td>
+              <td>30 – 120 pages (WGA Standard)</td>
+              <td>Courier 12pt, 1 page/minute pacing, act-break metrics.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 2: WORLD ENGINE -->
+    <section id="world-engine">
+      <div class="section-title-wrap">
+        <h2>Tab 2: World Engine (Dedicated Environment)</h2>
+        <span>Volumetric Cartography &amp; Simulations</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="module-box">
+          <h4>Sub-Tab 2.1: Dual-Pane Synthesis Workspace</h4>
+          <p>Real-time bidirectional drafting and entity parsing.</p>
+          <ul class="feature-list">
+            <li><strong>Live Text-to-World Parsing:</strong> Prose is analyzed on the fly, extracting geographical elements, factions, and creatures into the database.</li>
+            <li><strong>Procedural Contours:</strong> Text descriptions generate 3D heightmap contours on the spatial map viewport.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 2.2: 4D Multi-Stratum Chrono-Atlas</h4>
+          <p>Layer-separated spatial map rendering with historical scrub bars.</p>
+          <ul class="feature-list">
+            <li><strong>Four Volumetric Strata:</strong> Aerial/Sky keeps, Surface topography, Aquatic ocean depths, and Subterranean catacombs.</li>
+            <li><strong>Temporal Chrono-Slider:</strong> Scrub through historical eras to observe tectonic, climate, and border shifts.</li>
+            <li><strong>Kinematic Transit Auditor:</strong> Measures coordinate distances against terrain friction, flagging impossible travel claims.</li>
+            <li><strong>Spatial Audio:</strong> Localized binaural soundscapes (bustling markets, cavern drafts, ocean trenches) trigger on hover.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 2.3: Dynamic Environmental Simulations</h4>
+          <p>Simulating dynamic world forces across global borders.</p>
+          <ul class="feature-list">
+            <li><strong>Aetheric Currents:</strong> Visual oscillating energy fields and ley lines that wax and wane across land and sea.</li>
+            <li><strong>Volumetric Weather:</strong> Rain shadows, wind currents, and dynamic precipitation zones.</li>
+            <li><strong>Threat Vectors:</strong> Live tracking paths for armies, hostile migrations, and ecological blights.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 2.4: Macroeconomic &amp; Ripple-Effect Simulator</h4>
+          <p>Simulating market consequences across kingdoms.</p>
+          <ul class="feature-list">
+            <li><strong>Dynamic Borders:</strong> Visual display of changing territorial boundaries, treaties, and demilitarized frontiers.</li>
+            <li><strong>The Butterfly Engine:</strong> Test geopolitical events (e.g., crop failure) to simulate supply chain disruption and downstream plot events.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ARCHIVE -->
+    <section id="archive">
+      <div class="section-title-wrap">
+        <h2>Tab 3: Archive (Relational Database)</h2>
+        <span>Lore Directories, Formulas &amp; Systems</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="module-box">
+          <h4>Sub-Tab 3.1: Entity Directory</h4>
+          <ul class="feature-list">
+            <li><strong>Relational Tree:</strong> Characters, Factions, Guilds, Artifacts, Flora, Fauna, and Locations.</li>
+            <li><strong>Bi-directional Tagging:</strong> Typing <code>@EntityName</code> links references automatically across drafts.</li>
+            <li><strong>Vector Engine:</strong> Generates scale-independent vector schematics and crests directly inside cards.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 3.2: Formula &amp; Science Registry</h4>
+          <ul class="feature-list">
+            <li><strong>Tier I–V Formulations:</strong> Detailed documentation for medicines, alchemical recipes, and industrial engineering.</li>
+            <li><strong>Sensory &amp; Scent Profiles:</strong> Dedicated metadata tracking smells, visual textures, and thermal states.</li>
+            <li><strong>Inventory Dependencies:</strong> Formula reagents link directly to harvest yields in the biological catalog.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 3.3: ConLang &amp; Currency Mint</h4>
+          <ul class="feature-list">
+            <li><strong>ConLang Studio:</strong> Phonology rules, custom glyph set generators, and live inline translation tooltips.</li>
+            <li><strong>Currency Mint:</strong> Custom coin and token generator with obverse/reverse visual rendering.</li>
+            <li><strong>Economic Pegging:</strong> Real-time conversion tool translating world currencies into modern purchasing power equivalents.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SOCIAL -->
+    <section id="social">
+      <div class="section-title-wrap">
+        <h2>Tab 4: Social Nexus &amp; Dynamic Portfolio</h2>
+        <span>Showcases, Geolocation &amp; Community Intelligence</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="module-box">
+          <h4>Sub-Tab 4.1: Profile &amp; Dynamic 3D Portfolio</h4>
+          <ul class="feature-list">
+            <li><strong>Triple-Node Avatar Suite:</strong> Primary circular video loop flanked by a familiar/mascot node and a brand/insignia mark.</li>
+            <li><strong>4-Layer Autonomous Portfolio Sphere:</strong> Concentric, counter-rotating 3D rings featuring floating project cards. Supports manual scrub, autonomous orbit, and modal inspection.</li>
+            <li><strong>Real-time Presence Radar:</strong> Online indicator, optional location readout, and direct colleague contact tools.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 4.2: Local Community &amp; Geo-Hub</h4>
+          <ul class="feature-list">
+            <li><strong>Regional Guilds &amp; Salons:</strong> Directory of local writing meetups, critique groups, and schedules.</li>
+            <li><strong>Public Library Integration:</strong> Branch locations, desk telephone dialers, and facility booking tools.</li>
+            <li><strong>Civic Calendar:</strong> State and city arts grants, literature festivals, and publisher networking events.</li>
+            <li><strong>Publishing Legalities:</strong> Regional copyright filing, small-business registration, and ISBN resources.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: EMPORIUM -->
+    <section id="emporium">
+      <div class="section-title-wrap">
+        <h2>Tab 5: The Emporium</h2>
+        <span>Creator Economy &amp; Monetization Hub</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="module-box">
+          <h4>Sub-Tab 5.1: The Live Deck</h4>
+          <ul class="feature-list">
+            <li><strong>Broadcasting Suite:</strong> Embedded low-latency streaming hub with integrated audience chat.</li>
+            <li><strong>Product Pinning:</strong> Highlight specific merch items directly on the video feed during a broadcast.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 5.2: Merch Forge</h4>
+          <ul class="feature-list">
+            <li><strong>Print-on-Demand (POD) Pipeline:</strong> Generate apparel, tarot decks, canvas prints, and leather-bound covers.</li>
+            <li><strong>Manufacturing Webhooks:</strong> Automated order transmission, inventory synchronization, and tracking notifications.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 5.3: The Treasury</h4>
+          <ul class="feature-list">
+            <li><strong>Direct Payout Routing:</strong> Multi-channel support (Stripe, PayPal, CashApp, Venmo, Apple Pay).</li>
+            <li><strong>Real-time Margins:</strong> Automated formula subtracting base production, shipping, and gateway fees from retail price.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 5.4: Fan Nexus</h4>
+          <ul class="feature-list">
+            <li><strong>Centralized Directory:</strong> Clean, public-facing link hub routing followers to social accounts and Discord servers.</li>
+            <li><strong>Public Beta Gateway:</strong> Controlled reader access for proofreading, line-item suggestions, and lore polls.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: VAULT & IP -->
+    <section id="vault-ip">
+      <div class="section-title-wrap">
+        <h2>Tab 6: The Vault &amp; IP Defense</h2>
+        <span>Legal Verification &amp; Data Security</span>
+      </div>
+
+      <div class="grid-3">
+        <div class="module-box">
+          <h4>Sub-Tab 6.1: Legal Chain-of-Title</h4>
+          <ul class="feature-list">
+            <li><strong>WGA &amp; USCO Registry:</strong> Direct gateway for timestamped pre-registration filings.</li>
+            <li><strong>SHA-256 Ledger:</strong> Immutable draft hashing to create a verifiable proof-of-existence audit trail.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 6.2: Sovereign AI Firewall</h4>
+          <ul class="feature-list">
+            <li><strong>Zero Ingestion:</strong> All parsers run in stateless or local client-side environments.</li>
+            <li><strong>Anti-Scrape Guarantee:</strong> No user data is ever aggregated or used for model training.</li>
+            <li><strong>Steganographic Watermarking:</strong> Recipient-specific invisible marks on shared preview drafts.</li>
+          </ul>
+        </div>
+
+        <div class="module-box">
+          <h4>Sub-Tab 6.3: Multi-Party Collaboration</h4>
+          <ul class="feature-list">
+            <li><strong>Granular Role Access:</strong> Lead Author, Co-Writer, Staff Writer, and Read-Only Exec tiers.</li>
+            <li><strong>Credit Escrow:</strong> Transparent contribution logging to preserve clear writing partnership agreements.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; The Mythopoeists’ Codices — Complete Enterprise Architecture &amp; System Functional Specifications.</p>
+    </footer>
+  </div>
 
 </body>
 </html>
